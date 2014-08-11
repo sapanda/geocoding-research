@@ -41,13 +41,12 @@ public class OpenStreetMaps implements Solution {
             JsonRepresentation jr = new JsonRepresentation(rep);
             JSONArray jarr = jr.getJsonArray();
 
-            for (int i = 0; i < jarr.length(); ++i) {
-                JSONObject jobj = jarr.getJSONObject(i).getJSONObject("address");
+            // TODO: Deal with multiple return values
+            if (jarr.length() > 0) {
+                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
                 normAddress = parseAddress(jobj);
-
-                // TODO: Deal with multiple return values
-                break;
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -76,13 +75,10 @@ public class OpenStreetMaps implements Solution {
             JsonRepresentation jr = new JsonRepresentation(rep);
             JSONArray jarr = jr.getJsonArray();
 
-            for (int i = 0; i < jarr.length(); ++i){
-                JSONObject jobj = jarr.getJSONObject(i);
+            if (jarr.length() > 0) {
+                JSONObject jobj = jarr.getJSONObject(0);
                 latlong.latitude = jobj.getDouble("lat");
                 latlong.longitude = jobj.getDouble("lon");
-
-                // TODO: Deal with multiple return values
-                break;
             }
         } catch (IOException e) {
             e.printStackTrace();
