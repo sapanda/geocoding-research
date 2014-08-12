@@ -14,9 +14,7 @@ public class Gisgraphy implements Solution {
 
     @Override
     public String normalize(String address) {
-    	//Again,  just parser, not really normalizer
-    	//only returns the first response
-    	String normAddress = "";
+        String normAddress = "";
 
         // Make the query
         String url = "http://addressparser.appspot.com/webaddressparser?";
@@ -51,10 +49,10 @@ public class Gisgraphy implements Solution {
 
     @Override
     public LatLong geocode(String address) {
-    	LatLong latlong = new LatLong(0, 0);
+        LatLong latlong = new LatLong(0, 0);
 
         // Make the query
-    	//only returns the first response
+        //only returns the first response
         String url = "http://services.gisgraphy.com//geocoding/geocode";
 
         Reference ref = new Reference(url);
@@ -86,10 +84,10 @@ public class Gisgraphy implements Solution {
 
     @Override
     public String reverseGeocode(LatLong latlong) {
-    	String address = "";
+        String address = "";
 
         // Make the query
-    	//only returns the first response
+        //only returns the first response
         String url = "http://services.gisgraphy.com/street/streetsearch?";
 
         Reference ref = new Reference(url);
@@ -109,19 +107,20 @@ public class Gisgraphy implements Solution {
             JSONArray jarr = jr.getJsonObject().getJSONArray("result");
             JSONObject jobj = jarr.getJSONObject(0);
             address = parseAddress(jobj);
-            
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
         }
-        
-        //The above doesn't return anything useful, just really vague info
-        //like that it's a "residential" street or in the "Southern Chicago Heights"
-        //So I won't actually use the data I get from it
+
+        // The above doesn't return anything useful, just really vague info
+        // like that it's a "residential" street or in the "Southern Chicago Heights"
+        // So I won't actually use the data I get from it
 
         return null;
     }
+
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
 
