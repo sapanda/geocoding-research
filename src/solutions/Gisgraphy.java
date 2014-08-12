@@ -86,12 +86,41 @@ public class Gisgraphy implements Solution {
 
     @Override
     public String reverseGeocode(LatLong latlong) {
-    	//Reverse geocoding is totally useless here
-    	//Only can tell you general area (Ie "Chicago Southern Heights" for South Side)
-    	//And whether the street is residential or has some other use
-    	//so just deleted it completely as the information isn't useful
+    	String address = "";
 
-        return "";
+        // Make the query
+    	//only returns the first response
+        String url = "http://services.gisgraphy.com/street/streetsearch?";
+
+        Reference ref = new Reference(url);
+        ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
+        ref.addQueryParameter("lng", String.valueOf(latlong.longitude));
+        ref.addQueryParameter("from","1");
+        ref.addQueryParameter("to","1");
+        ref.addQueryParameter("format", "json");
+        System.out.println(ref);
+
+        Representation rep = new ClientResource(ref).get();
+
+        try {
+            // Parse the Data
+            JsonRepresentation jr = new JsonRepresentation(rep);
+
+            JSONArray jarr = jr.getJsonObject().getJSONArray("result");
+            JSONObject jobj = jarr.getJSONObject(0);
+            address = parseAddress(jobj);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        
+        //The above doesn't return anything useful, just really vague info
+        //like that it's a "residential" street or in the "Southern Chicago Heights"
+        //So I won't actually use the data I get from it
+
+        return null;
     }
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
