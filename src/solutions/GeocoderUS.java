@@ -14,51 +14,49 @@ public class GeocoderUS implements Solution {
 
     @Override
     public String normalize(String address) {
-    	String returnAddress ="";
-        // TODO: Deal with the fact that it doesn't normalize
-    	//This just parses
-    	//Standardizes to a very small degree as it returns all information it can find
-    	//Meaning it might return more information than you gave it
-    	//only returns first response
-    	//TODO: fix that?
-    	 String url = "http://rpc.geocoder.us/service/json?";
-
-         Reference ref = new Reference(url);
-         ref.addQueryParameter("address",address);
-         System.out.println("url: "+ref);
-        
-         Representation rep = new ClientResource(ref).get();
-         try {
-             // Parse the Data
-             JsonRepresentation jr = new JsonRepresentation(rep);
-             JSONArray jarr = jr.getJsonArray();
-
-             if (jarr.length() > 0) {
-                 JSONObject jobj = jarr.getJSONObject(0);
-                 returnAddress = parseAddress(jobj);
-             }
-
-         } catch (IOException e) {
-             e.printStackTrace();
-         } catch (JSONException e) {
-             e.printStackTrace();
-         }
-        return returnAddress;
-    }
-
-    @Override
-    public LatLong geocode(String address) {
-    	//only returns first response
-    	LatLong latlong = new LatLong(0, 0);
-        String url = "http://rpc.geocoder.us/service/json?";
+        String returnAddress ="";
+        // TODO: Deal with the fact that it doesn't normalize, just parses
+        // Standardizes to a very small degree as it returns all information it can find
+        // Meaning it might return more information than you gave it
+        // Only return the first response
+        String url = "http://rpc.geocoder.us/service/json";
 
         Reference ref = new Reference(url);
         ref.addQueryParameter("address",address);
         System.out.println("url: "+ref);
 
-//      ClientResource resource = new ClientResource(ref);
         Representation rep = new ClientResource(ref).get();
-        
+        try {
+            // Parse the Data
+            JsonRepresentation jr = new JsonRepresentation(rep);
+            JSONArray jarr = jr.getJsonArray();
+
+            if (jarr.length() > 0) {
+                JSONObject jobj = jarr.getJSONObject(0);
+                returnAddress = parseAddress(jobj);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return returnAddress;
+    }
+
+    @Override
+    public LatLong geocode(String address) {
+        //only returns first response
+        LatLong latlong = new LatLong(0, 0);
+        String url = "http://rpc.geocoder.us/service/json";
+
+        Reference ref = new Reference(url);
+        ref.addQueryParameter("address",address);
+        System.out.println("url: "+ref);
+
+        Representation rep = new ClientResource(ref).get();
+
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
@@ -79,8 +77,8 @@ public class GeocoderUS implements Solution {
 
     @Override
     public String reverseGeocode(LatLong latlong) {
-    	//does not have reverse geocoding
-    	return null;
+        //does not have reverse geocoding
+        return null;
     }
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";

@@ -1,7 +1,5 @@
 package solutions;
 
-import java.util.ArrayList;
-
 public interface Solution {
     String normalize(String address);
     LatLong geocode(String address);
