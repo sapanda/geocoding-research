@@ -80,7 +80,7 @@ public class GeocoderUS implements Solution {
     @Override
     public String reverseGeocode(LatLong latlong) {
     	//does not have reverse geocoding
-    	return "";
+    	return null;
     }
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
