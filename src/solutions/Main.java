@@ -3,12 +3,16 @@ package solutions;
 
 public class Main {
     public static void main(String[] args) {
-        GeocoderUS m = new GeocoderUS();
-        String address = "130 Harvard Ave E, Seattle, WA 98122";
-        LatLong latlong = new LatLong(47.6196523, -122.321789839922);
+        Gisgraphy m = new Gisgraphy();
+        String address = "5490 South Shore Dr, Chicago IL 60615";
 
-        System.out.println(m.normalize(address));
-        System.out.println(m.geocode(address));
-        System.out.println(m.reverseGeocode(latlong));
+        System.out.println("Normalize: "+m.normalize(address));
+
+        
+        LatLong latlong = m.geocode(address);
+
+        System.out.println("Geocode: "+latlong);
+        
+        System.out.println("Reverse Geocode: "+m.reverseGeocode(latlong));
     }
 }

@@ -15,6 +15,7 @@ public class Gisgraphy implements Solution {
     @Override
     public String normalize(String address) {
     	//Again,  just parser, not really normalizer
+    	//only returns the first response
     	String normAddress = "";
 
         // Make the query
@@ -24,17 +25,18 @@ public class Gisgraphy implements Solution {
         ref.addQueryParameter("address", address);
         ref.addQueryParameter("country", "US");
         ref.addQueryParameter("format", "json");
-
+        System.out.println(ref);
+        
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+            JSONArray jarr = jr.getJsonObject().getJSONArray("result");
 
             // TODO: Deal with multiple return values
             if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
+                JSONObject jobj = jarr.getJSONObject(0);
                 normAddress = parseAddress(jobj);
             }
 
@@ -52,6 +54,7 @@ public class Gisgraphy implements Solution {
     	LatLong latlong = new LatLong(0, 0);
 
         // Make the query
+    	//only returns the first response
         String url = "http://services.gisgraphy.com//geocoding/geocode?";
 
         Reference ref = new Reference(url);
@@ -65,12 +68,12 @@ public class Gisgraphy implements Solution {
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+            JSONArray jarr = jr.getJsonObject().getJSONArray("result");
 
             if (jarr.length() > 0) {
                 JSONObject jobj = jarr.getJSONObject(0);
                 latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("lon");
+                latlong.longitude = jobj.getDouble("lng");
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -83,52 +86,34 @@ public class Gisgraphy implements Solution {
 
     @Override
     public String reverseGeocode(LatLong latlong) {
-    	String address = "";
+    	//Reverse geocoding is totally useless here
+    	//Only can tell you general area (Ie "Chicago Southern Heights" for South Side)
+    	//And whether the street is residential or has some other use
+    	//so just deleted it completely as the information isn't useful
 
-        // Make the query
-        String url = "http://services.gisgraphy.com/street/streetsearch?";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
-        ref.addQueryParameter("lng", String.valueOf(latlong.longitude));
-        ref.addQueryParameter("from","1");
-        ref.addQueryParameter("to","1");
-        ref.addQueryParameter("format", "json");
-
-        Representation rep = new ClientResource(ref).get();
-
-        try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-
-            JSONObject jobj = jr.getJsonObject().getJSONObject("address");
-            address = parseAddress(jobj);
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return address;
+        return "";
     }
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
-
+        
         if (jobj.has("houseNumber")) {
             address += jobj.getString("houseNumber") + " ";
         }
         if (jobj.has("streetName")) {
-            address += jobj.getString("streetName") + ", ";
+            address += jobj.getString("streetName") + " ";
+        }
+        if (jobj.has("streetType")) {
+            address += jobj.getString("streetType") + ", ";
         }
         if (jobj.has("city")) {
             address += jobj.getString("city") + ", ";
         }
+        //has no state
         if (jobj.has("state")) {
             address += jobj.getString("state") + ", ";
         }
-        if (jobj.has("zipcode")) {
-            address += jobj.getString("zipcode");
+        if (jobj.has("zipCode")) {
+            address += jobj.getString("zipCode");
         }
 
         return address;
