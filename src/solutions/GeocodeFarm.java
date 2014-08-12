@@ -6,9 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class GeocodeFarm implements Solution {
+public class GeocodeFarm extends Solution {
 
     private final String API_KEY = "40753122757d6897bb0ffd62a1f3686c9d61f92c";
 
@@ -20,7 +19,7 @@ public class GeocodeFarm implements Solution {
         String url = String.format("http://www.geocodefarm.com/api/forward/json/%s/%s",
                 API_KEY, address);
 
-        Representation rep = new ClientResource(url).get();
+        Representation rep = getRepresentation(url);
 
         try {
             // Parse the Data
@@ -48,7 +47,7 @@ public class GeocodeFarm implements Solution {
         String url = String.format("http://www.geocodefarm.com/api/forward/json/%s/%s",
                 API_KEY, address);
 
-        Representation rep = new ClientResource(url).get();
+        Representation rep = getRepresentation(url);
 
         try {
             // Parse the Data
@@ -77,7 +76,7 @@ public class GeocodeFarm implements Solution {
         String url = String.format("http://www.geocodefarm.com/api/reverse/json/%s/%s/%s",
                 API_KEY, latlong.latitude, latlong.longitude);
 
-        Representation rep = new ClientResource(url).get();
+        Representation rep = getRepresentation(url);
 
         try {
             // Parse the Data

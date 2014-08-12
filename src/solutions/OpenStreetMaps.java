@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class OpenStreetMaps implements Solution {
+public class OpenStreetMaps extends Solution {
 
     @Override
     public String normalize(String address) {
@@ -24,7 +23,7 @@ public class OpenStreetMaps implements Solution {
         ref.addQueryParameter("format", "json");
         ref.addQueryParameter("addressdetails", "1");
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -33,7 +32,8 @@ public class OpenStreetMaps implements Solution {
 
             // TODO: Deal with multiple return values
             if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
+                JSONObject jobj = jarr.getJSONObject(0)
+                        .getJSONObject("address");
                 normAddress = parseAddress(jobj);
             }
 
@@ -58,7 +58,7 @@ public class OpenStreetMaps implements Solution {
         ref.addQueryParameter("format", "json");
         ref.addQueryParameter("addressdetails", "1");
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -92,14 +92,15 @@ public class OpenStreetMaps implements Solution {
         ref.addQueryParameter("format", "json");
         ref.addQueryParameter("addressdetails", "1");
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-
-            JSONObject jobj = jr.getJsonObject().getJSONObject("address");
-            address = parseAddress(jobj);
+            JSONObject jobj = jr.getJsonObject();
+            if (jobj.has("address")) {
+                address = parseAddress(jobj.getJSONObject("address"));
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

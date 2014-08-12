@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class Geocodio implements Solution {
+public class Geocodio extends Solution {
 
     private final String API_KEY = "9faaf3334205120e5951a52bc96505ef5b0eb55";
 
@@ -25,7 +24,7 @@ public class Geocodio implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("api_key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -58,7 +57,7 @@ public class Geocodio implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("api_key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -93,7 +92,7 @@ public class Geocodio implements Solution {
         ref.addQueryParameter("q", latlong.toString());
         ref.addQueryParameter("api_key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
