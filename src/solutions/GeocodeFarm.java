@@ -19,9 +19,9 @@ public class GeocodeFarm extends Solution {
         String url = String.format("http://www.geocodefarm.com/api/forward/json/%s/%s",
                 API_KEY, address);
 
-        Representation rep = getRepresentation(url);
-
         try {
+            Representation rep = getRepresentation(url);
+
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
             JSONObject jobj = jr.getJsonObject().getJSONObject("geocoding_results");
@@ -34,6 +34,8 @@ public class GeocodeFarm extends Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since GeoCodeFarm throws 404 errors if the location isn't found
         }
 
         return normAddress;
@@ -47,9 +49,9 @@ public class GeocodeFarm extends Solution {
         String url = String.format("http://www.geocodefarm.com/api/forward/json/%s/%s",
                 API_KEY, address);
 
-        Representation rep = getRepresentation(url);
-
         try {
+            Representation rep = getRepresentation(url);
+
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
             JSONObject jobj = jr.getJsonObject().getJSONObject("geocoding_results");
@@ -63,6 +65,8 @@ public class GeocodeFarm extends Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since GeoCodeFarm throws 404 errors if the location isn't found
         }
 
         return latlong;
@@ -76,9 +80,9 @@ public class GeocodeFarm extends Solution {
         String url = String.format("http://www.geocodefarm.com/api/reverse/json/%s/%s/%s",
                 API_KEY, latlong.latitude, latlong.longitude);
 
-        Representation rep = getRepresentation(url);
-
         try {
+            Representation rep = getRepresentation(url);
+
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
             JSONObject jobj = jr.getJsonObject().getJSONObject("geocoding_results");
@@ -91,6 +95,8 @@ public class GeocodeFarm extends Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since GeoCodeFarm throws 404 errors if the location isn't found
         }
 
         return address;
