@@ -2,7 +2,7 @@ package solutions;
 
 public class Main {
     public static void main(String[] args) {
-        OpenCageGeocoder m = new OpenCageGeocoder();
+        Geocodio m = new Geocodio();
         String address = "130 Harvard Ave E, Seattle, WA 98122";
         LatLong latlong = new LatLong(47.6196523, -122.321789839922);
 
