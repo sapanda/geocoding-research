@@ -12,16 +12,6 @@ import org.restlet.resource.ClientResource;
 
 public class OpenStreetMaps implements Solution {
 
-    public static void main(String[] args) {
-        OpenStreetMaps osm = new OpenStreetMaps();
-        String address = "130 Harvard Ave E, Seattle, WA 98122";
-        LatLong latlong = new LatLong(47.6196523, -122.321789839922);
-
-        System.out.println(osm.normalize(address));
-        System.out.println(osm.geocode(address));
-        System.out.println(osm.reverseGeocode(latlong));
-    }
-
     @Override
     public String normalize(String address) {
         String normAddress = "";
@@ -120,27 +110,23 @@ public class OpenStreetMaps implements Solution {
         return address;
     }
 
-    private String parseAddress(JSONObject jobj) {
+    private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
 
-        try {
-            if (jobj.has("house_number")) {
-                address += jobj.getString("house_number") + " ";
-            }
-            if (jobj.has("road")) {
-                address += jobj.getString("road") + ", ";
-            }
-            if (jobj.has("city")) {
-                address += jobj.getString("city") + ", ";
-            }
-            if (jobj.has("state")) {
-                address += jobj.getString("state") + ", ";
-            }
-            if (jobj.has("postcode")) {
-                address += jobj.getString("postcode");
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
+        if (jobj.has("house_number")) {
+            address += jobj.getString("house_number") + " ";
+        }
+        if (jobj.has("road")) {
+            address += jobj.getString("road") + ", ";
+        }
+        if (jobj.has("city")) {
+            address += jobj.getString("city") + ", ";
+        }
+        if (jobj.has("state")) {
+            address += jobj.getString("state") + ", ";
+        }
+        if (jobj.has("postcode")) {
+            address += jobj.getString("postcode");
         }
 
         return address;

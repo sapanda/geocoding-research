@@ -12,16 +12,6 @@ public class GeocodeFarm implements Solution {
 
     private final String API_KEY = "40753122757d6897bb0ffd62a1f3686c9d61f92c";
 
-    public static void main(String[] args) {
-        GeocodeFarm osm = new GeocodeFarm();
-        String address = "130 Harvard Ave E, Seattle, WA 98122";
-        LatLong latlong = new LatLong(47.6196523, -122.321789839922);
-
-        System.out.println(osm.normalize(address));
-        System.out.println(osm.geocode(address));
-        System.out.println(osm.reverseGeocode(latlong));
-    }
-
     @Override
     public String normalize(String address) {
         String normAddress = "";
