@@ -10,32 +10,27 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-public class OpenStreetMaps implements Solution {
+public class MapQuest implements Solution {
+
+    private final String API_KEY = "Fmjtd%7Cluur25u2ll%2C75%3Do5-9w7ld0";
 
     @Override
     public String normalize(String address) {
         String normAddress = "";
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+        // Note: the API_KEY is placed in the url since it has some weird characters
+        String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
 
         Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("location", address);
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
-
-            // TODO: Deal with multiple return values
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
-                normAddress = parseAddress(jobj);
-            }
+            normAddress = parseAddress(jr.getJsonObject());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,25 +46,28 @@ public class OpenStreetMaps implements Solution {
         LatLong latlong = new LatLong(0, 0);
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+        // Note: the API_KEY is placed in the url since it has some weird characters
+        String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
 
         Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("location", address);
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
 
+            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
             if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("lon");
+                jarr = jarr.getJSONObject(0).getJSONArray("locations");
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0).getJSONObject("latLng");
+                    latlong.latitude = jobj.getDouble("lat");
+                    latlong.longitude = jobj.getDouble("lng");
+                }
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -84,22 +82,18 @@ public class OpenStreetMaps implements Solution {
         String address = "";
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/reverse";
+        // Note: the API_KEY is placed in the url since it has some weird characters
+        String url = "http://www.mapquestapi.com/geocoding/v1/reverse?key=" + API_KEY;
 
         Reference ref = new Reference(url);
-        ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
-        ref.addQueryParameter("lon", String.valueOf(latlong.longitude));
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("location", latlong.toString());
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-
-            JSONObject jobj = jr.getJsonObject().getJSONObject("address");
-            address = parseAddress(jobj);
+            address = parseAddress(jr.getJsonObject());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,20 +107,17 @@ public class OpenStreetMaps implements Solution {
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
 
-        if (jobj.has("house_number")) {
-            address += jobj.getString("house_number") + " ";
-        }
-        if (jobj.has("road")) {
-            address += jobj.getString("road") + ", ";
-        }
-        if (jobj.has("city")) {
-            address += jobj.getString("city") + ", ";
-        }
-        if (jobj.has("state")) {
-            address += jobj.getString("state") + ", ";
-        }
-        if (jobj.has("postcode")) {
-            address += jobj.getString("postcode");
+        JSONArray jarr = jobj.getJSONArray("results");
+        if (jarr.length() > 0) {
+            jarr = jarr.getJSONObject(0).getJSONArray("locations");
+            if (jarr.length() > 0) {
+                jobj = jarr.getJSONObject(0);
+
+                address = jobj.getString("street") + ", " +
+                        jobj.getString("adminArea5") + ", " +
+                        jobj.getString("adminArea3") + " " +
+                        jobj.getString("postalCode");
+            }
         }
 
         return address;

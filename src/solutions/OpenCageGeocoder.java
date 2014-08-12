@@ -10,32 +10,27 @@ import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
 import org.restlet.resource.ClientResource;
 
-public class OpenStreetMaps implements Solution {
+public class OpenCageGeocoder implements Solution {
+
+    private final String API_KEY = "a50ffda7c1baf4681044f52d95c30ef7";
 
     @Override
     public String normalize(String address) {
         String normAddress = "";
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+        String url = "http://api.opencagedata.com/geocode/v1/json";
 
         Reference ref = new Reference(url);
         ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("key", API_KEY);
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
-
-            // TODO: Deal with multiple return values
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
-                normAddress = parseAddress(jobj);
-            }
+            normAddress = parseAddress(jr.getJsonObject());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -51,25 +46,26 @@ public class OpenStreetMaps implements Solution {
         LatLong latlong = new LatLong(0, 0);
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+        String url = "http://api.opencagedata.com/geocode/v1/json";
 
         Reference ref = new Reference(url);
         ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("key", API_KEY);
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
 
+            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
             if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
+                JSONObject jobj = jarr.getJSONObject(0)
+                        .getJSONObject("geometry");
                 latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("lon");
+                latlong.longitude = jobj.getDouble("lng");
             }
+
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -84,22 +80,18 @@ public class OpenStreetMaps implements Solution {
         String address = "";
 
         // Make the query
-        String url = "http://nominatim.openstreetmap.org/reverse";
+        String url = "http://api.opencagedata.com/geocode/v1/json";
 
         Reference ref = new Reference(url);
-        ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
-        ref.addQueryParameter("lon", String.valueOf(latlong.longitude));
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+        ref.addQueryParameter("q", latlong.toString());
+        ref.addQueryParameter("key", API_KEY);
 
         Representation rep = new ClientResource(ref).get();
 
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
-
-            JSONObject jobj = jr.getJsonObject().getJSONObject("address");
-            address = parseAddress(jobj);
+            address = parseAddress(jr.getJsonObject());
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -113,20 +105,29 @@ public class OpenStreetMaps implements Solution {
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
 
-        if (jobj.has("house_number")) {
-            address += jobj.getString("house_number") + " ";
-        }
-        if (jobj.has("road")) {
-            address += jobj.getString("road") + ", ";
-        }
-        if (jobj.has("city")) {
-            address += jobj.getString("city") + ", ";
-        }
-        if (jobj.has("state")) {
-            address += jobj.getString("state") + ", ";
-        }
-        if (jobj.has("postcode")) {
-            address += jobj.getString("postcode");
+        JSONArray jarr = jobj.getJSONArray("results");
+        if (jarr.length() > 0) {
+            jobj = jarr.getJSONObject(0).getJSONObject("components");
+
+            if (jobj.has("house_number")) {
+                address += jobj.getString("house_number") + " ";
+            }
+            if (jobj.has("road")) {
+                address += jobj.getString("road") + ", ";
+            }
+            if (jobj.has("city")) {
+                address += jobj.getString("city") + ", ";
+            }
+            if (jobj.has("state")) {
+                address += jobj.getString("state") + " ";
+            }
+            if (jobj.has("postcode")) {
+                address += jobj.getString("postcode");
+            }
+
+            if (address.length() == 0) {
+                address = jarr.getJSONObject(0).getString("formatted");
+            }
         }
 
         return address;
