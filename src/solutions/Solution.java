@@ -1,9 +1,11 @@
 package solutions;
 
+import java.util.ArrayList;
+
 public interface Solution {
-    String normalize(String address);
-    LatLong geocode(String address);
-    String reverseGeocode(LatLong latlong);
+    String[] normalize(String address);
+    ArrayList<LatLong> geocode(String address);
+    String[] reverseGeocode(LatLong latlong);
 }
 
 class LatLong {
