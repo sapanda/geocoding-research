@@ -56,12 +56,13 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 	        LatLong latlong = new LatLong(0, 0);
 
 	        // Make the query
-	        String url = "http://nominatim.openstreetmap.org/search";
+	        String url = "https://api.smartystreets.com/street-address";
 
 	        Reference ref = new Reference(url);
-	        ref.addQueryParameter("q", address);
-	        ref.addQueryParameter("format", "json");
-	        ref.addQueryParameter("addressdetails", "1");
+	        ref.addQueryParameter("street", address);
+	        ref.addQueryParameter("auth-id", authId);
+	        ref.addQueryParameter("auth-token", authToken);
+	        System.out.println(ref);
 
 	        Representation rep = new ClientResource(ref).get();
 
@@ -71,9 +72,9 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 	            JSONArray jarr = jr.getJsonArray();
 
 	            if (jarr.length() > 0) {
-	                JSONObject jobj = jarr.getJSONObject(0);
-	                latlong.latitude = jobj.getDouble("lat");
-	                latlong.longitude = jobj.getDouble("lon");
+	                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("metadata");
+	                latlong.latitude = jobj.getDouble("latitude");
+	                latlong.longitude = jobj.getDouble("longitude");
 	            }
 	        } catch (IOException e) {
 	            e.printStackTrace();
@@ -86,33 +87,8 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 
 	    @Override
 	    public String reverseGeocode(LatLong latlong) {
-	        String address = "";
-
-	        // Make the query
-	        String url = "http://nominatim.openstreetmap.org/reverse";
-
-	        Reference ref = new Reference(url);
-	        ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
-	        ref.addQueryParameter("lon", String.valueOf(latlong.longitude));
-	        ref.addQueryParameter("format", "json");
-	        ref.addQueryParameter("addressdetails", "1");
-
-	        Representation rep = new ClientResource(ref).get();
-
-	        try {
-	            // Parse the Data
-	            JsonRepresentation jr = new JsonRepresentation(rep);
-
-	            JSONObject jobj = jr.getJsonObject().getJSONObject("address");
-	            address = parseAddress(jobj);
-
-	        } catch (IOException e) {
-	            e.printStackTrace();
-	        } catch (JSONException e) {
-	            e.printStackTrace();
-	        }
-
-	        return address;
+	        //doesn't do reverse geocoding
+	        return null;
 	    }
 
 	    private String parseAddress(JSONObject jobj) throws JSONException {
@@ -138,23 +114,6 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 	        }
 	        if (jobj.has("zipcode")) {
 	            address += jobj.getString("zipcode") + " ";
-	        }
-	        
-	        //for reverse geocoding
-	        if (jobj.has("house_number")) {
-	            address += jobj.getString("house_number") + " ";
-	        }
-	        if (jobj.has("road")) {
-	            address += jobj.getString("road") + ", ";
-	        }
-	        if (jobj.has("city")) {
-	            address += jobj.getString("city") + ", ";
-	        }
-	        if (jobj.has("state")) {
-	            address += jobj.getString("state") + ", ";
-	        }
-	        if (jobj.has("postcode")) {
-	            address += jobj.getString("postcode");
 	        }
 
 	        return address;
