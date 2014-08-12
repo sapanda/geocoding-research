@@ -8,7 +8,6 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
 public class MapQuest extends Solution {
 
@@ -88,7 +87,7 @@ public class MapQuest extends Solution {
         Reference ref = new Reference(url);
         ref.addQueryParameter("location", latlong.toString());
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
