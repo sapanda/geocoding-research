@@ -1,15 +1,15 @@
 package solutions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Reference;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
 
-public class Geocodio extends Solution {
+public class Geocodio implements Solution {
 
     private final String API_KEY = "9faaf3334205120e5951a52bc96505ef5b0eb55";
 
@@ -17,26 +17,25 @@ public class Geocodio extends Solution {
     public String normalize(String address) {
         String normAddress = "";
 
-        // Make the query
-        String url = "https://api.geocod.io/v1/geocode";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("api_key", API_KEY);
-
         try {
-            Representation rep = getRepresentation(ref);
+            // Make the query
+            URI uri = new URIBuilder("https://api.geocod.io/v1/geocode")
+                .setParameter("q", address)
+                .setParameter("api_key", API_KEY)
+                .build();
+
+            String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
+            JSONArray jarr = new JSONObject(json).getJSONArray("results");
 
-            // Highest accuracy always at the head of the list
-            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
             if (jarr.length() > 0) {
                 JSONObject jobj = jarr.getJSONObject(0);
                 normAddress = jobj.getString("formatted_address");
             }
 
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -54,21 +53,17 @@ public class Geocodio extends Solution {
     public LatLong geocode(String address) {
         LatLong latlong = new LatLong(0, 0);
 
-        // Make the query
-        String url = "https://api.geocod.io/v1/geocode";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("api_key", API_KEY);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
+            // Make the query
+            URI uri = new URIBuilder("https://api.geocod.io/v1/geocode")
+                .setParameter("q", address)
+                .setParameter("api_key", API_KEY)
+                .build();
 
-            // Highest accuracy always at the head of the list
-            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            JSONArray jarr = new JSONObject(json).getJSONArray("results");
             if (jarr.length() > 0) {
                 JSONObject jobj = jarr.getJSONObject(0).getJSONObject(
                         "location");
@@ -77,10 +72,16 @@ public class Geocodio extends Solution {
                 latlong.longitude = jobj.getDouble("lng");
             }
 
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since sometimes Restlet throws an
+            // "Unprocessable Entity (422)" exception when Geocodio actually
+            // returns a valid error string
         }
 
         return latlong;
@@ -90,30 +91,32 @@ public class Geocodio extends Solution {
     public String reverseGeocode(LatLong latlong) {
         String address = "";
 
-        // Make the query
-        String url = "https://api.geocod.io/v1/reverse";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", latlong.toString());
-        ref.addQueryParameter("api_key", API_KEY);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
+            // Make the query
+            URI uri = new URIBuilder("https://api.geocod.io/v1/reverse")
+                .setParameter("q", latlong.toString())
+                .setParameter("api_key", API_KEY)
+                .build();
 
-            // Highest accuracy always at the head of the list
-            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            JSONArray jarr = new JSONObject(json).getJSONArray("results");
             if (jarr.length() > 0) {
                 JSONObject jobj = jarr.getJSONObject(0);
                 address = jobj.getString("formatted_address");
             }
 
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since sometimes Restlet throws an
+            // "Unprocessable Entity (422)" exception when Geocodio actually
+            // returns a valid error string
         }
 
         return address;

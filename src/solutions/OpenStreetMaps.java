@@ -1,135 +1,137 @@
 package solutions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Reference;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
 
-public class OpenStreetMaps extends Solution {
+public class OpenStreetMaps implements Solution {
 
-	@Override
-	public String normalize(String address) {
-		String normAddress = "";
+    @Override
+    public String normalize(String address) {
+        String normAddress = "";
 
-		// Make the query
-		String url = "http://nominatim.openstreetmap.org/search";
+        try {
+            // Make the query
+            URI uri = new URIBuilder("http://nominatim.openstreetmap.org/search")
+                .setParameter("q", address)
+                .setParameter("format", "json")
+                .setParameter("addressdetails", "1")
+                .build();
 
-		Reference ref = new Reference(url);
-		ref.addQueryParameter("q", address);
-		ref.addQueryParameter("format", "json");
-		ref.addQueryParameter("addressdetails", "1");
+            String json = util.HttpUtils.httpGetJson(uri);
 
-		Representation rep = getRepresentation(ref);
+            // Parse the Data
+            JSONArray jarr = new JSONArray(json);
 
-		try {
-			// Parse the Data
-			JsonRepresentation jr = new JsonRepresentation(rep);
-			JSONArray jarr = jr.getJsonArray();
+            // TODO: Deal with multiple return values
+            if (jarr.length() > 0) {
+                JSONObject jobj = jarr.getJSONObject(0)
+                        .getJSONObject("address");
+                normAddress = parseAddress(jobj);
+            }
 
-			// TODO: Deal with multiple return values
-			if (jarr.length() > 0) {
-				JSONObject jobj = jarr.getJSONObject(0)
-						.getJSONObject("address");
-				normAddress = parseAddress(jobj);
-			}
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+        return normAddress;
+    }
 
-		return normAddress;
-	}
+    @Override
+    public LatLong geocode(String address) {
+        LatLong latlong = new LatLong(0, 0);
 
-	@Override
-	public LatLong geocode(String address) {
-		LatLong latlong = new LatLong(0, 0);
+        try {
+            // Make the query
+            URI uri = new URIBuilder("http://nominatim.openstreetmap.org/search")
+                .setParameter("q", address)
+                .setParameter("format", "json")
+                .setParameter("addressdetails", "1")
+                .build();
 
-		// Make the query
-		String url = "http://nominatim.openstreetmap.org/search";
+            String json = util.HttpUtils.httpGetJson(uri);
 
-		Reference ref = new Reference(url);
-		ref.addQueryParameter("q", address);
-		ref.addQueryParameter("format", "json");
-		ref.addQueryParameter("addressdetails", "1");
+            // Parse the Data
+            JSONArray jarr = new JSONArray(json);
 
-		Representation rep = getRepresentation(ref);
+            // TODO: Deal with multiple return values
+            if (jarr.length() > 0) {
+                JSONObject jobj = jarr.getJSONObject(0);
+                latlong.latitude = jobj.getDouble("lat");
+                latlong.longitude = jobj.getDouble("lon");
+            }
 
-		try {
-			// Parse the Data
-			JsonRepresentation jr = new JsonRepresentation(rep);
-			JSONArray jarr = jr.getJsonArray();
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-			if (jarr.length() > 0) {
-				JSONObject jobj = jarr.getJSONObject(0);
-				latlong.latitude = jobj.getDouble("lat");
-				latlong.longitude = jobj.getDouble("lon");
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+        return latlong;
+    }
 
-		return latlong;
-	}
+    @Override
+    public String reverseGeocode(LatLong latlong) {
+        String address = "";
 
-	@Override
-	public String reverseGeocode(LatLong latlong) {
-		String address = "";
+        try {
+            // Make the query
+            URI uri = new URIBuilder("http://nominatim.openstreetmap.org/reverse")
+                .setParameter("q", address)
+                .setParameter("format", "json")
+                .setParameter("addressdetails", "1")
+                .build();
 
-		// Make the query
-		String url = "http://nominatim.openstreetmap.org/reverse";
+            String json = util.HttpUtils.httpGetJson(uri);
 
-		Reference ref = new Reference(url);
-		ref.addQueryParameter("lat", String.valueOf(latlong.latitude));
-		ref.addQueryParameter("lon", String.valueOf(latlong.longitude));
-		ref.addQueryParameter("format", "json");
-		ref.addQueryParameter("addressdetails", "1");
+            // Parse the Data
+            JSONObject jobj = new JSONObject(json);
 
-		Representation rep = getRepresentation(ref);
+            if (jobj.has("address")) {
+                address = parseAddress(jobj.getJSONObject("address"));
+            }
 
-		try {
-			// Parse the Data
-			JsonRepresentation jr = new JsonRepresentation(rep);
-			JSONObject jobj = jr.getJsonObject();
-			if (jobj.has("address")) {
-				address = parseAddress(jobj.getJSONObject("address"));
-			}
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+        return address;
+    }
 
-		return address;
-	}
+    private String parseAddress(JSONObject jobj) throws JSONException {
+        String address = "";
 
-	private String parseAddress(JSONObject jobj) throws JSONException {
-		String address = "";
+        if (jobj.has("house_number")) {
+            address += jobj.getString("house_number") + " ";
+        }
+        if (jobj.has("road")) {
+            address += jobj.getString("road") + ", ";
+        }
+        if (jobj.has("city")) {
+            address += jobj.getString("city") + ", ";
+        }
+        if (jobj.has("state")) {
+            address += jobj.getString("state") + ", ";
+        }
+        if (jobj.has("postcode")) {
+            address += jobj.getString("postcode");
+        }
 
-		if (jobj.has("house_number")) {
-			address += jobj.getString("house_number") + " ";
-		}
-		if (jobj.has("road")) {
-			address += jobj.getString("road") + ", ";
-		}
-		if (jobj.has("city")) {
-			address += jobj.getString("city") + ", ";
-		}
-		if (jobj.has("state")) {
-			address += jobj.getString("state") + ", ";
-		}
-		if (jobj.has("postcode")) {
-			address += jobj.getString("postcode");
-		}
-
-		return address;
-	}
+        return address;
+    }
 }

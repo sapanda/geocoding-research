@@ -1,15 +1,15 @@
 package solutions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Reference;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
 
-public class MapQuest extends Solution {
+public class MapQuest implements Solution {
 
     private final String API_KEY = "Fmjtd%7Cluur25u2ll%2C75%3Do5-9w7ld0";
 
@@ -17,20 +17,21 @@ public class MapQuest extends Solution {
     public String normalize(String address) {
         String normAddress = "";
 
-        // Make the query
-        // Note: the API_KEY is placed in the url since it has some weird characters
-        String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("location", address);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            normAddress = parseAddress(jr.getJsonObject());
+            // Make the query
+            // Note: the API_KEY is placed in the url since it has some weird characters
+            String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
+            URI uri = new URIBuilder(url)
+                .setParameter("location", address)
+                .build();
 
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            normAddress = parseAddress(new JSONObject(json));
+
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -44,20 +45,18 @@ public class MapQuest extends Solution {
     public LatLong geocode(String address) {
         LatLong latlong = new LatLong(0, 0);
 
-        // Make the query
-        // Note: the API_KEY is placed in the url since it has some weird characters
-        String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("location", address);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
+            // Make the query
+            // Note: the API_KEY is placed in the url since it has some weird characters
+            String url = "http://www.mapquestapi.com/geocoding/v1/address?key=" + API_KEY;
+            URI uri = new URIBuilder(url)
+                .setParameter("location", address)
+                .build();
 
-            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            JSONArray jarr = new JSONObject(json).getJSONArray("results");
             if (jarr.length() > 0) {
                 jarr = jarr.getJSONObject(0).getJSONArray("locations");
                 if (jarr.length() > 0) {
@@ -67,6 +66,8 @@ public class MapQuest extends Solution {
                 }
             }
 
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -80,20 +81,21 @@ public class MapQuest extends Solution {
     public String reverseGeocode(LatLong latlong) {
         String address = "";
 
-        // Make the query
-        // Note: the API_KEY is placed in the url since it has some weird characters
-        String url = "http://www.mapquestapi.com/geocoding/v1/reverse?key=" + API_KEY;
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("location", latlong.toString());
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            address = parseAddress(jr.getJsonObject());
+            // Make the query
+            // Note: the API_KEY is placed in the url since it has some weird characters
+            String url = "http://www.mapquestapi.com/geocoding/v1/reverse?key=" + API_KEY;
+            URI uri = new URIBuilder(url)
+                .setParameter("location", latlong.toString())
+                .build();
 
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            address = parseAddress(new JSONObject(json));
+
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
