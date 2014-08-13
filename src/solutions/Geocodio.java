@@ -24,9 +24,9 @@ public class Geocodio extends Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("api_key", API_KEY);
 
-        Representation rep = getRepresentation(ref);
-
         try {
+            Representation rep = getRepresentation(ref);
+
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
 
@@ -41,6 +41,10 @@ public class Geocodio extends Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
+        } catch (Exception e) {
+            // Ignore since sometimes Restlet throws an
+            // "Unprocessable Entity (422)" exception when Geocodio actually
+            // returns a valid error string
         }
 
         return normAddress;
@@ -66,7 +70,8 @@ public class Geocodio extends Solution {
             // Highest accuracy always at the head of the list
             JSONArray jarr = jr.getJsonObject().getJSONArray("results");
             if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("location");
+                JSONObject jobj = jarr.getJSONObject(0).getJSONObject(
+                        "location");
 
                 latlong.latitude = jobj.getDouble("lat");
                 latlong.longitude = jobj.getDouble("lng");
