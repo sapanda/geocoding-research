@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class Gisgraphy implements Solution {
+public class Gisgraphy extends Solution {
 
     @Override
     public String normalize(String address) {
@@ -25,7 +24,7 @@ public class Gisgraphy implements Solution {
         ref.addQueryParameter("format", "json");
         System.out.println(ref);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -53,7 +52,7 @@ public class Gisgraphy implements Solution {
 
         // Make the query
         //only returns the first response
-        String url = "http://services.gisgraphy.com//geocoding/geocode";
+        String url = "http://services.gisgraphy.com/geocoding/geocode";
 
         Reference ref = new Reference(url);
         ref.addQueryParameter("address", address);
@@ -61,7 +60,7 @@ public class Gisgraphy implements Solution {
         ref.addQueryParameter("format", "json");
         System.out.println(ref);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -98,7 +97,7 @@ public class Gisgraphy implements Solution {
         ref.addQueryParameter("format", "json");
         System.out.println(ref);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data

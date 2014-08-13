@@ -8,14 +8,13 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class SmartyStreets implements Solution{
+public class SmartyStreets extends Solution{
 	//these is a free trial auth-id and auth-token
 	//limited to 250 lookups per month after September 12, 2014
-private String authId = "9110bb3d-0e00-4746-aa42-8cc58cd1f56d";
-private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
-	
+    private final String authId = "9110bb3d-0e00-4746-aa42-8cc58cd1f56d";
+    private final String authToken = "s0rBT9aLR6MCPIEB9Cyh";
+
 	 @Override
 	 public String normalize(String address) {
 		 String normAddress = "";
@@ -29,7 +28,7 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 	        ref.addQueryParameter("auth-token", authToken);
 	        System.out.println(ref);
 
-	        Representation rep = new ClientResource(ref).get();
+	        Representation rep = getRepresentation(ref);
 
 	        try {
 	            // Parse the Data
@@ -64,7 +63,7 @@ private String authToken = "s0rBT9aLR6MCPIEB9Cyh";
 	        ref.addQueryParameter("auth-token", authToken);
 	        System.out.println(ref);
 
-	        Representation rep = new ClientResource(ref).get();
+	        Representation rep = getRepresentation(ref);
 
 	        try {
 	            // Parse the Data

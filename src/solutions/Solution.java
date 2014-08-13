@@ -1,22 +1,27 @@
 package solutions;
 
-public interface Solution {
-    String normalize(String address);
-    LatLong geocode(String address);
-    String reverseGeocode(LatLong latlong);
-}
+import org.restlet.Client;
+import org.restlet.data.Protocol;
+import org.restlet.data.Reference;
+import org.restlet.representation.Representation;
+import org.restlet.resource.ClientResource;
 
-class LatLong {
-    public double latitude;
-    public double longitude;
+public abstract class Solution {
+    private final Client CLIENT = new Client(Protocol.HTTP);
 
-    public LatLong(double latitude, double longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
+    public abstract String normalize(String address);
+    public abstract LatLong geocode(String address);
+    public abstract String reverseGeocode(LatLong latlong);
+
+    protected Representation getRepresentation(Reference ref) {
+        ClientResource res = new ClientResource(ref);
+        res.setNext(CLIENT);
+        return res.get();
     }
 
-    @Override
-    public String toString() {
-        return latitude + ", " + longitude;
+    protected Representation getRepresentation(String url) {
+        ClientResource res = new ClientResource(url);
+        res.setNext(CLIENT);
+        return res.get();
     }
 }

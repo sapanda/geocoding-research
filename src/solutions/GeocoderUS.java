@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class GeocoderUS implements Solution {
+public class GeocoderUS extends Solution {
 
     @Override
     public String normalize(String address) {
@@ -25,7 +24,7 @@ public class GeocoderUS implements Solution {
         ref.addQueryParameter("address",address);
         System.out.println("url: "+ref);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
         try {
             // Parse the Data
             JsonRepresentation jr = new JsonRepresentation(rep);
@@ -55,7 +54,7 @@ public class GeocoderUS implements Solution {
         ref.addQueryParameter("address",address);
         System.out.println("url: "+ref);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data

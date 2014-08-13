@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class MapQuest implements Solution {
+public class MapQuest extends Solution {
 
     private final String API_KEY = "Fmjtd%7Cluur25u2ll%2C75%3Do5-9w7ld0";
 
@@ -25,7 +24,7 @@ public class MapQuest implements Solution {
         Reference ref = new Reference(url);
         ref.addQueryParameter("location", address);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -52,7 +51,7 @@ public class MapQuest implements Solution {
         Reference ref = new Reference(url);
         ref.addQueryParameter("location", address);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -88,7 +87,7 @@ public class MapQuest implements Solution {
         Reference ref = new Reference(url);
         ref.addQueryParameter("location", latlong.toString());
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data

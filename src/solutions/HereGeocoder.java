@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class HereGeocoder implements Solution {
+public class HereGeocoder extends Solution {
 
     private final String APP_ID = "0uONArqcbXgaxh7XCxry";
     private final String APP_CODE = "jwtLcQC4vjyOUUjEGnkkiQ";
@@ -28,7 +27,7 @@ public class HereGeocoder implements Solution {
         ref.addQueryParameter("gen", "5");
         ref.addQueryParameter("searchtext", address);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -57,7 +56,7 @@ public class HereGeocoder implements Solution {
         ref.addQueryParameter("gen", "5");
         ref.addQueryParameter("searchtext", address);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -100,7 +99,7 @@ public class HereGeocoder implements Solution {
         ref.addQueryParameter("mode", "retrieveAddresses");
         ref.addQueryParameter("prox", latlong.toString());
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data

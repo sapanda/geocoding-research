@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class BingMaps implements Solution {
+public class BingMaps extends Solution {
 
     private final String API_KEY = "Aq6kRrGRShf5y_mBjd4KGSiwO9sS2y3MpmYQGohA2zRHNdl9ZKkM1jtAuPNjZbu6";
 
@@ -25,7 +24,7 @@ public class BingMaps implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -52,7 +51,7 @@ public class BingMaps implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -89,7 +88,7 @@ public class BingMaps implements Solution {
         Reference ref = new Reference(url);
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data

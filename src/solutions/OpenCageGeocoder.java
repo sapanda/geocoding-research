@@ -8,9 +8,8 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class OpenCageGeocoder implements Solution {
+public class OpenCageGeocoder extends Solution {
 
     private final String API_KEY = "a50ffda7c1baf4681044f52d95c30ef7";
 
@@ -25,7 +24,7 @@ public class OpenCageGeocoder implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -52,7 +51,7 @@ public class OpenCageGeocoder implements Solution {
         ref.addQueryParameter("q", address);
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
@@ -86,7 +85,7 @@ public class OpenCageGeocoder implements Solution {
         ref.addQueryParameter("q", latlong.toString());
         ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+        Representation rep = getRepresentation(ref);
 
         try {
             // Parse the Data
