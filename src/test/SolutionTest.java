@@ -12,89 +12,98 @@ import java.util.List;
 
 import org.junit.Test;
 
-import solutions.GeocoderUS;
+import solutions.Gisgraphy;
 import solutions.LatLong;
 import solutions.Solution;
 
 public class SolutionTest {
 
-    private final List<String> addressList;
+	private final List<String> addressList;
 
-    public SolutionTest() throws IOException, URISyntaxException {
-        // Load the list of addresses
-        addressList = new ArrayList<String>();
-        String address;
+	public SolutionTest() throws IOException, URISyntaxException {
+		// Load the list of addresses
+		addressList = new ArrayList<String>();
+		String address;
 
-        File f = new File(getClass().getResource("Addresses.txt").toURI());
-        BufferedReader file = new BufferedReader(new FileReader(f));
-        while ((address = file.readLine()) != null) {
-            addressList.add(address);
-        }
-        file.close();
-    }
+		final File f = new File(getClass().getResource("Addresses.txt").toURI());
+		final BufferedReader file = new BufferedReader(new FileReader(f));
+		while ((address = file.readLine()) != null) {
+			addressList.add(address);
+		}
+		file.close();
+	}
 
-    @Test
-    public void test() {
-        Solution[] solutions = new Solution[] {
-//            new OpenStreetMaps(),
-//            new BingMaps(),
-//            new GeocodeFarm(),
-            new GeocoderUS()
-        };
+	@Test
+	public void test() {
+		final Solution[] solutions = new Solution[] {
+		// new BingMaps(),
+		// new GeocodeFarm(),
+		new Gisgraphy() };
 
-        for (Solution sln : solutions) {
-            testSolution(sln);
-        }
-    }
+		for (final Solution sln : solutions) {
+			testSolution(sln);
+		}
+	}
 
-    public void testSolution(Solution sln) {
+	public void testSolution(Solution sln) {
 
-        String className = sln.getClass().getSimpleName();
+		final String className = sln.getClass().getSimpleName();
 
-        try {
-            PrintWriter output = new PrintWriter(className + ".csv");
-            output.println("Address, Norm, Geo, Reverse, NTime, GTime, RTime");
+		try {
+			final PrintWriter output = new PrintWriter(className + ".csv");
+			output.println("Address, Norm, Geo, Reverse, NTime, GTime, RTime");
 
-            System.out.println("-----------------------------");
-            System.out.println(sln.getClass().getSimpleName());
-            System.out.println("-----------------------------\n");
+			System.out.println("-----------------------------");
+			System.out.println(sln.getClass().getSimpleName());
+			System.out.println("-----------------------------\n");
 
-            for (String address : addressList) {
-                System.out.println("Address:     " + address);
+			for (final String address : addressList) {
+				System.out.println("Address:     " + address);
+				// use timer for gisgraphy
+				// try {
+				// Thread.sleep(2000); // 1000 milliseconds is one second.
+				// } catch (final InterruptedException ex) {
+				// Thread.currentThread().interrupt();
+				// }
 
-                // Normalization
-                long then = System.currentTimeMillis();
-                String normAddress = sln.normalize(address);
-                long now = System.currentTimeMillis();
-                double normTime = (now - then)/1000.0;
-                System.out.println(String.format("  (%ss)  Norm:      %s", normTime, normAddress));
+				// Normalization
+				long then = System.currentTimeMillis();
+				final String normAddress = sln.normalize(address);
+				long now = System.currentTimeMillis();
+				final double normTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  Norm:      %s",
+						normTime, normAddress));
 
-                LatLong latlong;
+				LatLong latlong;
 
-                // Geocoding
-                then = System.currentTimeMillis();
-                latlong = sln.geocode(address);
-                now = System.currentTimeMillis();
-                double geoTime = (now - then)/1000.0;
-                System.out.println(String.format("  (%ss)  Geocode:   (%s)", geoTime, latlong));
+				// Geocoding
+				then = System.currentTimeMillis();
+				latlong = sln.geocode(address);
+				now = System.currentTimeMillis();
+				final double geoTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  Geocode:   (%s)",
+						geoTime, latlong));
 
-                // Reverse Geocoding
-                then = System.currentTimeMillis();
-                String newAddress = sln.reverseGeocode(latlong);
-                now = System.currentTimeMillis();
-                double reverseTime = (now - then)/1000.0;
-                System.out.println(String.format("  (%ss)  R-Geocode: %s", reverseTime, newAddress));
+				// Reverse Geocoding
+				then = System.currentTimeMillis();
+				final String newAddress = sln.reverseGeocode(latlong);
+				now = System.currentTimeMillis();
+				final double reverseTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  R-Geocode: %s",
+						reverseTime, newAddress));
 
-                System.out.println();
-                output.println(String.format("\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                        address, normAddress, latlong, newAddress, normTime, geoTime, reverseTime));
-            }
+				System.out.println();
+				output.println(String.format(
+						"\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+						address, normAddress, latlong, newAddress, normTime,
+						geoTime, reverseTime));
+			}
 
-            output.close();
+			output.close();
 
-        } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
+		} catch (final FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 }
