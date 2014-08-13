@@ -13,7 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import solutions.LatLong;
-import solutions.SmartyStreets;
+import solutions.MapLarge;
 import solutions.Solution;
 
 public class SolutionTest {
@@ -36,15 +36,15 @@ public class SolutionTest {
 	@Test
 	public void test() {
 		final Solution[] solutions = new Solution[] {
-				// new GeocodeFarm(),
-				// new Geocodio(),
-				// new HereGeocoder(),
-				// new MapQuest(),
-				// new OpenCageGeocoder(),
-				// new OpenStreetMaps()
-				// new Gisgraphy()
-				// new GeocoderUS()
-		new SmartyStreets() };
+		// new GeocodeFarm(),
+		// new Geocodio(),
+		// new HereGeocoder(),
+		// new MapQuest(),
+		// new OpenCageGeocoder(),
+		// new OpenStreetMaps()
+		// new Gisgraphy()
+		// new GeocoderUS()
+				new MapLarge() };
 
 		for (final Solution sln : solutions) {
 			testSolution(sln);

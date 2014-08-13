@@ -28,7 +28,7 @@ public class MapLarge extends Solution {
 		Reference ref = new Reference(url);
 		ref.addQueryParameter("address", address);
 		ref.addQueryParameter("key", apiKey);
-		System.out.println(ref);
+
 		Representation rep = getRepresentation(ref);
 
 		try {
