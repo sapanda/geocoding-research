@@ -1,16 +1,16 @@
+
 package solutions;
 
 public class Main {
-	public static void main(String[] args) {
-		GeocoderUS m = new GeocoderUS();
-		// String address = "1000 Central St Chicago, IL 60201";
-		String address = "2744 1/2 N. Hampden Ct, Chicago, 60614";
+    public static void main(String[] args) throws InterruptedException {
+        MapLarge m = new MapLarge();
+        String address = "130 Harvard Ave E, Seattle, WA 98122";
 
-		System.out.println("Normalize: " + m.normalize(address));
+        System.out.println("Normalize: " + m.normalize(address));
 
-		LatLong latlong = m.geocode(address);
+        LatLong latlong = m.geocode(address);
 
-		System.out.println("Geocode: " + latlong);
-		System.out.println("Reverse Geocode: " + m.reverseGeocode(latlong));
-	}
+        System.out.println("Geocode: " + latlong);
+        System.out.println("Reverse Geocode: " + m.reverseGeocode(latlong));
+    }
 }

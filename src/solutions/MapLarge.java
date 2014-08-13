@@ -1,54 +1,55 @@
 package solutions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Reference;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
 
-public class MapLarge extends Solution {
-	// 14 day api key
-	private final String apiKey = "geo31847";
+public class MapLarge implements Solution {
+    // 14 day api key
+    private final String API_KEY = "geo31847";
 
-	@Override
-	public String normalize(String address) {
-		// can only do this if we first parse the address
-		return null;
-	}
+    @Override
+    public String normalize(String address) {
+        // can only do this if we first parse the address
+        return null;
+    }
 
-	@Override
-	public LatLong geocode(String address) {
-		LatLong latlong = new LatLong(0, 0);
+    @Override
+    public LatLong geocode(String address) {
+        LatLong latlong = new LatLong(0, 0);
 
-		// Make the query
-		String url = "http://geocoder.maplarge.com/geocoder/json?";
+        try {
+            // Make the query
+            URI uri = new URIBuilder("http://geocoder.maplarge.com/geocoder/json")
+                .setParameter("address", address)
+                .setParameter("key", API_KEY)
+                .build();
 
-		Reference ref = new Reference(url);
-		ref.addQueryParameter("address", address);
-		ref.addQueryParameter("key", apiKey);
+            String json = util.HttpUtils.httpGetJson(uri);
 
-		Representation rep = getRepresentation(ref);
+            // Parse the Data
+            JSONObject jobj = new JSONObject(json);
+            latlong.latitude = jobj.getDouble("lat");
+            latlong.longitude = jobj.getDouble("lng");
 
-		try {
-			// Parse the Data
-			JsonRepresentation jr = new JsonRepresentation(rep);
-			JSONObject jobj = jr.getJsonObject();
-			latlong.latitude = jobj.getDouble("lat");
-			latlong.longitude = jobj.getDouble("lng");
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-		return latlong;
-	}
+        return latlong;
+    }
 
-	@Override
-	public String reverseGeocode(LatLong latlong) {
-		return null;
-	}
+    @Override
+    public String reverseGeocode(LatLong latlong) {
+        return null;
+    }
 
 }

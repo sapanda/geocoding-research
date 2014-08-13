@@ -1,15 +1,15 @@
 package solutions;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.restlet.data.Reference;
-import org.restlet.ext.json.JsonRepresentation;
-import org.restlet.representation.Representation;
 
-public class OpenCageGeocoder extends Solution {
+public class OpenCageGeocoder implements Solution {
 
     private final String API_KEY = "a50ffda7c1baf4681044f52d95c30ef7";
 
@@ -17,20 +17,20 @@ public class OpenCageGeocoder extends Solution {
     public String normalize(String address) {
         String normAddress = "";
 
-        // Make the query
-        String url = "http://api.opencagedata.com/geocode/v1/json";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("key", API_KEY);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            normAddress = parseAddress(jr.getJsonObject());
+            // Make the query
+            URI uri = new URIBuilder("http://api.opencagedata.com/geocode/v1/json")
+                .setParameter("q", address)
+                .setParameter("key", API_KEY)
+                .build();
 
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            normAddress = parseAddress(new JSONObject(json));
+
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -44,20 +44,17 @@ public class OpenCageGeocoder extends Solution {
     public LatLong geocode(String address) {
         LatLong latlong = new LatLong(0, 0);
 
-        // Make the query
-        String url = "http://api.opencagedata.com/geocode/v1/json";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("key", API_KEY);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
+            // Make the query
+            URI uri = new URIBuilder("http://api.opencagedata.com/geocode/v1/json")
+                .setParameter("q", address)
+                .setParameter("key", API_KEY)
+                .build();
 
-            JSONArray jarr = jr.getJsonObject().getJSONArray("results");
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            JSONArray jarr = new JSONObject(json).getJSONArray("results");
             if (jarr.length() > 0) {
                 JSONObject jobj = jarr.getJSONObject(0)
                         .getJSONObject("geometry");
@@ -65,6 +62,8 @@ public class OpenCageGeocoder extends Solution {
                 latlong.longitude = jobj.getDouble("lng");
             }
 
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
@@ -78,20 +77,20 @@ public class OpenCageGeocoder extends Solution {
     public String reverseGeocode(LatLong latlong) {
         String address = "";
 
-        // Make the query
-        String url = "http://api.opencagedata.com/geocode/v1/json";
-
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", latlong.toString());
-        ref.addQueryParameter("key", API_KEY);
-
-        Representation rep = getRepresentation(ref);
-
         try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            address = parseAddress(jr.getJsonObject());
+            // Make the query
+            URI uri = new URIBuilder("http://api.opencagedata.com/geocode/v1/json")
+                .setParameter("q", latlong.toString())
+                .setParameter("key", API_KEY)
+                .build();
 
+            String json = util.HttpUtils.httpGetJson(uri);
+
+            // Parse the Data
+            address = parseAddress(new JSONObject(json));
+
+        } catch (URISyntaxException e1) {
+            e1.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
