@@ -24,12 +24,14 @@ public class GeocoderUS implements Solution {
             String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JSONArray jarr = new JSONArray(json);
+            if (json.length() > 0) {
+                JSONArray jarr = new JSONArray(json);
 
-            // Only return the first response
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                returnAddress = parseAddress(jobj);
+                // Only return the first response
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0);
+                    returnAddress = parseAddress(jobj);
+                }
             }
 
         } catch (URISyntaxException e1) {
@@ -56,13 +58,15 @@ public class GeocoderUS implements Solution {
             String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JSONArray jarr = new JSONArray(json);
+            if (json.length() > 0) {
+                JSONArray jarr = new JSONArray(json);
 
-            // Only return the first response
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("long");
+                // Only return the first response
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0);
+                    latlong.latitude = jobj.getDouble("lat");
+                    latlong.longitude = jobj.getDouble("long");
+                }
             }
 
         } catch (URISyntaxException e1) {
@@ -81,6 +85,7 @@ public class GeocoderUS implements Solution {
         //does not have reverse geocoding
         return null;
     }
+
     private String parseAddress(JSONObject jobj) throws JSONException {
         String address = "";
 

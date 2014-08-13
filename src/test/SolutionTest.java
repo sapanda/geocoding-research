@@ -13,6 +13,7 @@ import java.util.List;
 import org.junit.Test;
 
 import solutions.LatLong;
+import solutions.SmartyStreets;
 import solutions.Solution;
 
 public class SolutionTest {
@@ -35,17 +36,17 @@ public class SolutionTest {
     @Test
     public void test() {
         final Solution[] solutions = new Solution[] {
-                // new BingMaps(),
-                // new GeocodeFarm(),
-                // new Geocodio(),
-                // new HereGeocoder(),
-                // new MapQuest(),
-                // new OpenCageGeocoder(),
-                // new OpenStreetMaps(),
-                // new Gisgraphy(),
-                // new GeocoderUS(),
-                // new MapLarge(),
-                // new SmartyStreets()
+//                 new BingMaps(),
+//                 new GeocodeFarm(),
+//                 new Geocodio(), // Untestable as it results in huge timeouts
+//                 new HereGeocoder(),
+//                 new MapQuest(),
+//                 new OpenCageGeocoder(),
+//                 new OpenStreetMaps(),
+//                 new Gisgraphy(),
+//                 new GeocoderUS(),
+//                 new MapLarge(),
+                 new SmartyStreets(),
         };
 
         for (final Solution sln : solutions) {
@@ -55,11 +56,10 @@ public class SolutionTest {
 
     public void testSolution(Solution sln) {
 
-        final String className = sln.getClass().getSimpleName();
-
         try {
-            final PrintWriter output = new PrintWriter("results/" + className
-                    + ".csv");
+            final String className = sln.getClass().getSimpleName();
+
+            final PrintWriter output = new PrintWriter("results/" + className + ".csv");
             output.println("Address, Norm, Geo, Reverse, NTime, GTime, RTime");
 
             System.out.println("-----------------------------");
@@ -68,11 +68,11 @@ public class SolutionTest {
 
             for (final String address : addressList) {
                 System.out.println("Address:     " + address);
-                // // use timer for gisgraphy
+                // // Use timer for Gisgraphy since it limits
                 // try {
-                // Thread.sleep(2000); // 1000 milliseconds is one second.
+                //     Thread.sleep(2000); // 1000 milliseconds is one second.
                 // } catch (final InterruptedException ex) {
-                // Thread.currentThread().interrupt();
+                //     Thread.currentThread().interrupt();
                 // }
 
                 // Normalization
@@ -111,7 +111,6 @@ public class SolutionTest {
             output.close();
 
         } catch (final FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

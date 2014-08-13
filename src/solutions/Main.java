@@ -3,8 +3,8 @@ package solutions;
 
 public class Main {
     public static void main(String[] args) throws InterruptedException {
-        MapLarge m = new MapLarge();
-        String address = "130 Harvard Ave E, Seattle, WA 98122";
+        GeocoderUS m = new GeocoderUS();
+        String address = "2320 N Damen, Chicago, ILLINOIS IL";
 
         System.out.println("Normalize: " + m.normalize(address));
 

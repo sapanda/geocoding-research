@@ -27,11 +27,13 @@ public class Geocodio implements Solution {
             String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JSONArray jarr = new JSONObject(json).getJSONArray("results");
+            if (json.length() > 0) {
+                JSONArray jarr = new JSONObject(json).getJSONArray("results");
 
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                normAddress = jobj.getString("formatted_address");
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0);
+                    normAddress = jobj.getString("formatted_address");
+                }
             }
 
         } catch (URISyntaxException e1) {
@@ -40,10 +42,6 @@ public class Geocodio implements Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            // Ignore since sometimes Restlet throws an
-            // "Unprocessable Entity (422)" exception when Geocodio actually
-            // returns a valid error string
         }
 
         return normAddress;
@@ -63,13 +61,15 @@ public class Geocodio implements Solution {
             String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JSONArray jarr = new JSONObject(json).getJSONArray("results");
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject(
-                        "location");
+            if (json.length() > 0) {
+                JSONArray jarr = new JSONObject(json).getJSONArray("results");
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0).getJSONObject(
+                            "location");
 
-                latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("lng");
+                    latlong.latitude = jobj.getDouble("lat");
+                    latlong.longitude = jobj.getDouble("lng");
+                }
             }
 
         } catch (URISyntaxException e1) {
@@ -78,10 +78,6 @@ public class Geocodio implements Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            // Ignore since sometimes Restlet throws an
-            // "Unprocessable Entity (422)" exception when Geocodio actually
-            // returns a valid error string
         }
 
         return latlong;
@@ -101,10 +97,13 @@ public class Geocodio implements Solution {
             String json = util.HttpUtils.httpGetJson(uri);
 
             // Parse the Data
-            JSONArray jarr = new JSONObject(json).getJSONArray("results");
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                address = jobj.getString("formatted_address");
+            if (json.length() > 0) {
+                JSONArray jarr = new JSONObject(json).getJSONArray("results");
+
+                if (jarr.length() > 0) {
+                    JSONObject jobj = jarr.getJSONObject(0);
+                    address = jobj.getString("formatted_address");
+                }
             }
 
         } catch (URISyntaxException e1) {
@@ -113,10 +112,6 @@ public class Geocodio implements Solution {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            // Ignore since sometimes Restlet throws an
-            // "Unprocessable Entity (422)" exception when Geocodio actually
-            // returns a valid error string
         }
 
         return address;

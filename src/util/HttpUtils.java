@@ -23,7 +23,11 @@ public class HttpUtils {
     public static String httpGetJson(HttpGet request) throws ClientProtocolException, IOException {
         HttpClient client = HttpClientBuilder.create().build();
         HttpResponse response = client.execute(request);
-        String json = IOUtils.toString(response.getEntity().getContent());
+
+        String json = "";
+        if (response.getStatusLine().getStatusCode() == 200) {
+            json = IOUtils.toString(response.getEntity().getContent());
+        }
 
         return json;
     }

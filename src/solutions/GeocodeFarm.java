@@ -21,20 +21,20 @@ public class GeocodeFarm implements Solution {
 
             String json = util.HttpUtils.httpGetJson(url);
 
-            // Parse the Data
-            JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
+            if (json.length() > 0) {
+                // Parse the Data
+                JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
 
-            if (jobj.has("ADDRESS")) {
-                jobj = jobj.getJSONObject("ADDRESS");
-                normAddress = jobj.getString("address_returned");
+                if (jobj.has("ADDRESS")) {
+                    jobj = jobj.getJSONObject("ADDRESS");
+                    normAddress = jobj.getString("address_returned");
+                }
             }
 
         } catch (IOException e) {
             e.printStackTrace();
         } catch (JSONException e) {
             e.printStackTrace();
-        } catch (Exception e) {
-            // Ignore since GeoCodeFarm throws 404 errors if the location isn't found
         }
 
         return normAddress;
@@ -51,13 +51,14 @@ public class GeocodeFarm implements Solution {
 
             String json = util.HttpUtils.httpGetJson(url);
 
-            // Parse the Data
-            JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
-
-            if (jobj.has("COORDINATES")) {
-                jobj = jobj.getJSONObject("COORDINATES");
-                latlong.latitude = jobj.getDouble("latitude");
-                latlong.longitude = jobj.getDouble("longitude");
+            if (json.length() > 0) {
+                // Parse the Data
+                JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
+                if (jobj.has("COORDINATES")) {
+                    jobj = jobj.getJSONObject("COORDINATES");
+                    latlong.latitude = jobj.getDouble("latitude");
+                    latlong.longitude = jobj.getDouble("longitude");
+                }
             }
 
         } catch (IOException e) {
@@ -82,12 +83,14 @@ public class GeocodeFarm implements Solution {
 
             String json = util.HttpUtils.httpGetJson(url);
 
-            // Parse the Data
-            JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
+            if (json.length() > 0) {
+                // Parse the Data
+                JSONObject jobj = new JSONObject(json).getJSONObject("geocoding_results");
 
-            if (jobj.has("ADDRESS")) {
-                jobj = jobj.getJSONObject("ADDRESS");
-                address = jobj.getString("address");
+                if (jobj.has("ADDRESS")) {
+                    jobj = jobj.getJSONObject("ADDRESS");
+                    address = jobj.getString("address");
+                }
             }
 
         } catch (IOException e) {
