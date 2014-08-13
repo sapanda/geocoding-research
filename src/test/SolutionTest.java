@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.junit.Test;
 
+import solutions.GeocoderUS;
 import solutions.LatLong;
-import solutions.OpenStreetMaps;
 import solutions.Solution;
 
 public class SolutionTest {
@@ -36,14 +36,14 @@ public class SolutionTest {
 	@Test
 	public void test() {
 		final Solution[] solutions = new Solution[] {
-				// new GeocodeFarm(),
-				// new Geocodio(),
-				// new HereGeocoder(),
-				// new MapQuest(),
-				// new OpenCageGeocoder(),
-				new OpenStreetMaps()
-				// new Gisgraphy()
-		};
+		// new GeocodeFarm(),
+		// new Geocodio(),
+		// new HereGeocoder(),
+		// new MapQuest(),
+		// new OpenCageGeocoder(),
+		// new OpenStreetMaps()
+		// new Gisgraphy()
+		new GeocoderUS() };
 
 		for (final Solution sln : solutions) {
 			testSolution(sln);
@@ -65,7 +65,7 @@ public class SolutionTest {
 
 			for (final String address : addressList) {
 				System.out.println("Address:     " + address);
-				// use timer for gisgraphy
+				// // use timer for gisgraphy
 				// try {
 				// Thread.sleep(2000); // 1000 milliseconds is one second.
 				// } catch (final InterruptedException ex) {

@@ -11,93 +11,102 @@ import org.restlet.representation.Representation;
 
 public class GeocoderUS extends Solution {
 
-    @Override
-    public String normalize(String address) {
-        String returnAddress ="";
-        // TODO: Deal with the fact that it doesn't normalize, just parses
-        // Standardizes to a very small degree as it returns all information it can find
-        // Meaning it might return more information than you gave it
-        // Only return the first response
-        String url = "http://rpc.geocoder.us/service/json";
+	@Override
+	public String normalize(String address) {
+		String returnAddress = "";
+		// TODO: Deal with the fact that it doesn't normalize, just parses
+		// Standardizes to a very small degree as it returns all information it
+		// can find
+		// Meaning it might return more information than you gave it
+		// Only return the first response
+		String url = "http://rpc.geocoder.us/service/json";
 
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("address",address);
-        System.out.println("url: "+ref);
+		Reference ref = new Reference(url);
+		ref.addQueryParameter("address", address);
 
-        Representation rep = getRepresentation(ref);
-        try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+		Representation rep;
+		try {
+			rep = getRepresentation(ref);
+		} catch (Exception e) {
+			return null;
+		}
+		try {
+			// Parse the Data
+			JsonRepresentation jr = new JsonRepresentation(rep);
+			JSONArray jarr = jr.getJsonArray();
 
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                returnAddress = parseAddress(jobj);
-            }
+			if (jarr.length() > 0) {
+				JSONObject jobj = jarr.getJSONObject(0);
+				returnAddress = parseAddress(jobj);
+			}
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-        return returnAddress;
-    }
+		return returnAddress;
+	}
 
-    @Override
-    public LatLong geocode(String address) {
-        //only returns first response
-        LatLong latlong = new LatLong(0, 0);
-        String url = "http://rpc.geocoder.us/service/json";
+	@Override
+	public LatLong geocode(String address) {
+		// only returns first response
+		LatLong latlong = new LatLong(0, 0);
+		String url = "http://rpc.geocoder.us/service/json";
 
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("address",address);
-        System.out.println("url: "+ref);
+		Reference ref = new Reference(url);
+		ref.addQueryParameter("address", address);
 
-        Representation rep = getRepresentation(ref);
+		Representation rep;
+		try {
+			rep = getRepresentation(ref);
+		} catch (Exception e) {
+			return null;
+		}
+		try {
+			// Parse the Data
+			JsonRepresentation jr = new JsonRepresentation(rep);
+			JSONArray jarr = jr.getJsonArray();
 
-        try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+			if (jarr.length() > 0) {
+				JSONObject jobj = jarr.getJSONObject(0);
+				latlong.latitude = jobj.getDouble("lat");
+				latlong.longitude = jobj.getDouble("long");
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return latlong;
+	}
 
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("long");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-        return latlong;
-    }
+	@Override
+	public String reverseGeocode(LatLong latlong) {
+		// does not have reverse geocoding
+		return null;
+	}
 
-    @Override
-    public String reverseGeocode(LatLong latlong) {
-        //does not have reverse geocoding
-        return null;
-    }
-    private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
+	private String parseAddress(JSONObject jobj) throws JSONException {
+		String address = "";
 
-        if (jobj.has("number")) {
-            address += jobj.getString("number") + " ";
-        }
-        if (jobj.has("street")) {
-            address += jobj.getString("street") + ", ";
-        }
-        if (jobj.has("city")) {
-            address += jobj.getString("city") + ", ";
-        }
-        if (jobj.has("state")) {
-            address += jobj.getString("state") + ", ";
-        }
-        if (jobj.has("zip")) {
-            address += jobj.getString("zip");
-        }
+		if (jobj.has("number")) {
+			address += jobj.getString("number") + " ";
+		}
+		if (jobj.has("street")) {
+			address += jobj.getString("street") + ", ";
+		}
+		if (jobj.has("city")) {
+			address += jobj.getString("city") + ", ";
+		}
+		if (jobj.has("state")) {
+			address += jobj.getString("state") + ", ";
+		}
+		if (jobj.has("zip")) {
+			address += jobj.getString("zip");
+		}
 
-        return address;
-    }
+		return address;
+	}
 }

@@ -2,12 +2,13 @@ package solutions;
 
 public class Main {
 	public static void main(String[] args) {
-		final MapLarge m = new MapLarge();
-		final String address = "5490 South Shore Dr, Chicago, IL 60615";
+		GeocoderUS m = new GeocoderUS();
+		// String address = "1000 Central St Chicago, IL 60201";
+		String address = "2744 1/2 N. Hampden Ct, Chicago, 60614";
 
 		System.out.println("Normalize: " + m.normalize(address));
 
-		final LatLong latlong = m.geocode(address);
+		LatLong latlong = m.geocode(address);
 
 		System.out.println("Geocode: " + latlong);
 		System.out.println("Reverse Geocode: " + m.reverseGeocode(latlong));
