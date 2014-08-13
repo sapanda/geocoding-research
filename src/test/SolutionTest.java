@@ -12,8 +12,8 @@ import java.util.List;
 
 import org.junit.Test;
 
-import solutions.Gisgraphy;
 import solutions.LatLong;
+import solutions.OpenStreetMaps;
 import solutions.Solution;
 
 public class SolutionTest {
@@ -33,17 +33,17 @@ public class SolutionTest {
 		file.close();
 	}
 
-    @Test
-    public void test() {
-        Solution[] solutions = new Solution[] {
-//                new BingMaps(),
-//                new GeocodeFarm(),
-//                new Geocodio(),
-//                new HereGeocoder(),
-//                new MapQuest(),
-//                new OpenCageGeocoder(),
-//                new OpenStreetMaps(),
-        };
+	@Test
+	public void test() {
+		final Solution[] solutions = new Solution[] {
+				// new GeocodeFarm(),
+				// new Geocodio(),
+				// new HereGeocoder(),
+				// new MapQuest(),
+				// new OpenCageGeocoder(),
+				new OpenStreetMaps()
+				// new Gisgraphy()
+		};
 
 		for (final Solution sln : solutions) {
 			testSolution(sln);
@@ -54,9 +54,10 @@ public class SolutionTest {
 
 		final String className = sln.getClass().getSimpleName();
 
-        try {
-            PrintWriter output = new PrintWriter("results/" + className + ".csv");
-            output.println("Address, Norm, Geo, Reverse, NTime, GTime, RTime");
+		try {
+			final PrintWriter output = new PrintWriter("results/" + className
+					+ ".csv");
+			output.println("Address, Norm, Geo, Reverse, NTime, GTime, RTime");
 
 			System.out.println("-----------------------------");
 			System.out.println(sln.getClass().getSimpleName());
@@ -71,38 +72,38 @@ public class SolutionTest {
 				// Thread.currentThread().interrupt();
 				// }
 
-                // Normalization
-                long then = System.currentTimeMillis();
-                String normAddress = sln.normalize(address);
-                long now = System.currentTimeMillis();
-                double normTime = (now - then) / 1000.0;
-                System.out.println(String.format("  (%ss)  Norm:      %s",
-                        normTime, normAddress));
+				// Normalization
+				long then = System.currentTimeMillis();
+				final String normAddress = sln.normalize(address);
+				long now = System.currentTimeMillis();
+				final double normTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  Norm:      %s",
+						normTime, normAddress));
 
 				LatLong latlong;
 
-                // Geocoding
-                then = System.currentTimeMillis();
-                latlong = sln.geocode(address);
-                now = System.currentTimeMillis();
-                double geoTime = (now - then) / 1000.0;
-                System.out.println(String.format("  (%ss)  Geocode:   (%s)",
-                        geoTime, latlong));
+				// Geocoding
+				then = System.currentTimeMillis();
+				latlong = sln.geocode(address);
+				now = System.currentTimeMillis();
+				final double geoTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  Geocode:   (%s)",
+						geoTime, latlong));
 
-                // Reverse Geocoding
-                then = System.currentTimeMillis();
-                String newAddress = sln.reverseGeocode(latlong);
-                now = System.currentTimeMillis();
-                double reverseTime = (now - then) / 1000.0;
-                System.out.println(String.format("  (%ss)  R-Geocode: %s",
-                        reverseTime, newAddress));
+				// Reverse Geocoding
+				then = System.currentTimeMillis();
+				final String newAddress = sln.reverseGeocode(latlong);
+				now = System.currentTimeMillis();
+				final double reverseTime = (now - then) / 1000.0;
+				System.out.println(String.format("  (%ss)  R-Geocode: %s",
+						reverseTime, newAddress));
 
-                System.out.println();
-                output.println(String.format(
-                        "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
-                        address, normAddress, latlong, newAddress, normTime,
-                        geoTime, reverseTime));
-            }
+				System.out.println();
+				output.println(String.format(
+						"\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",\"%s\"",
+						address, normAddress, latlong, newAddress, normTime,
+						geoTime, reverseTime));
+			}
 
 			output.close();
 

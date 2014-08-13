@@ -8,101 +8,114 @@ import org.json.JSONObject;
 import org.restlet.data.Reference;
 import org.restlet.ext.json.JsonRepresentation;
 import org.restlet.representation.Representation;
-import org.restlet.resource.ClientResource;
 
-public class OpenStreetMaps implements Solution {
+public class MelissaData extends Solution {
 
-    @Override
-    public String normalize(String address) {
-        String normAddress = "";
+	private final String API_KEY = "Aq6kRrGRShf5y_mBjd4KGSiwO9sS2y3MpmYQGohA2zRHNdl9ZKkM1jtAuPNjZbu6";
 
-        // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+	@Override
+	public String normalize(String address) {
+		String normAddress = "";
 
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+		// Make the query
+		String url = "http://dev.virtualearth.net/REST/v1/Locations";
 
-        Representation rep = new ClientResource(ref).get();
+		Reference ref = new Reference(url);
+		ref.addQueryParameter("q", address);
+		ref.addQueryParameter("key", API_KEY);
 
-        try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+		Representation rep = getRepresentation(ref);
 
-            // TODO: Deal with multiple return values
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0).getJSONObject("address");
-                normAddress = parseAddress(jobj);
-            }
+		try {
+			// Parse the Data
+			JsonRepresentation jr = new JsonRepresentation(rep);
+			normAddress = parseAddress(jr.getJsonObject());
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-        return normAddress;
-    }
+		return normAddress;
+	}
 
-    @Override
-    public LatLong geocode(String address) {
-        LatLong latlong = new LatLong(0, 0);
+	@Override
+	public LatLong geocode(String address) {
+		LatLong latlong = new LatLong(0, 0);
 
-        // Make the query
-        String url = "http://nominatim.openstreetmap.org/search";
+		// Make the query
+		String url = "http://dev.virtualearth.net/REST/v1/Locations";
 
-        Reference ref = new Reference(url);
-        ref.addQueryParameter("q", address);
-        ref.addQueryParameter("format", "json");
-        ref.addQueryParameter("addressdetails", "1");
+		Reference ref = new Reference(url);
+		ref.addQueryParameter("q", address);
+		ref.addQueryParameter("key", API_KEY);
 
-        Representation rep = new ClientResource(ref).get();
+		Representation rep = getRepresentation(ref);
 
-        try {
-            // Parse the Data
-            JsonRepresentation jr = new JsonRepresentation(rep);
-            JSONArray jarr = jr.getJsonArray();
+		try {
+			// Parse the Data
+			JsonRepresentation jr = new JsonRepresentation(rep);
 
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                latlong.latitude = jobj.getDouble("lat");
-                latlong.longitude = jobj.getDouble("lon");
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+			JSONArray jarr = jr.getJsonObject().getJSONArray("resourceSets");
+			if (jarr.length() > 0) {
+				jarr = jarr.getJSONObject(0).getJSONArray("resources");
+				if (jarr.length() > 0) {
+					jarr = jarr.getJSONObject(0).getJSONObject("point")
+							.getJSONArray("coordinates");
+					latlong.latitude = jarr.getDouble(0);
+					latlong.longitude = jarr.getDouble(1);
+				}
+			}
 
-        return latlong;
-    }
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
 
-    @Override
-    public String reverseGeocode(LatLong latlong) {
-       return null;
-    }
+		return latlong;
+	}
 
-    private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
+	@Override
+	public String reverseGeocode(LatLong latlong) {
+		String address = "";
 
-        if (jobj.has("house_number")) {
-            address += jobj.getString("house_number") + " ";
-        }
-        if (jobj.has("road")) {
-            address += jobj.getString("road") + ", ";
-        }
-        if (jobj.has("city")) {
-            address += jobj.getString("city") + ", ";
-        }
-        if (jobj.has("state")) {
-            address += jobj.getString("state") + ", ";
-        }
-        if (jobj.has("postcode")) {
-            address += jobj.getString("postcode");
-        }
+		// Make the query
+		String url = "http://dev.virtualearth.net/REST/v1/Locations/"
+				+ latlong.toString();
 
-        return address;
-    }
+		Reference ref = new Reference(url);
+		ref.addQueryParameter("key", API_KEY);
+
+		Representation rep = getRepresentation(ref);
+
+		try {
+			// Parse the Data
+			JsonRepresentation jr = new JsonRepresentation(rep);
+			address = parseAddress(jr.getJsonObject());
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+
+		return address;
+	}
+
+	private String parseAddress(JSONObject jobj) throws JSONException {
+		String address = "";
+
+		JSONArray jarr = jobj.getJSONArray("resourceSets");
+		if (jarr.length() > 0) {
+			jarr = jarr.getJSONObject(0).getJSONArray("resources");
+			if (jarr.length() > 0) {
+				address = jarr.getJSONObject(0).getJSONObject("address")
+						.getString("formattedAddress");
+			}
+		}
+
+		return address;
+	}
 }
