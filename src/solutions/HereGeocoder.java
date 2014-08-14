@@ -118,20 +118,44 @@ public class HereGeocoder implements Solution {
     }
 
     private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
+        Address address = new Address();
 
         JSONArray jarr = jobj.getJSONObject("Response").getJSONArray("View");
         if (jarr.length() > 0) {
             jarr = jarr.getJSONObject(0).getJSONArray("Result");
             if (jarr.length() > 0) {
-                address = jarr.getJSONObject(0)
+                jobj = jarr.getJSONObject(0)
                         .getJSONObject("Location")
-                        .getJSONObject("Address")
-                        .getString("Label");
+                        .getJSONObject("Address");
+
+                if (jobj.has("HouseNumber")) {
+                    address.houseNumber = jobj.getString("HouseNumber");
+                }
+                if (jobj.has("Street")) {
+                    address.street = jobj.getString("Street");
+                }
+                if (jobj.has("District")) {
+                    address.district = jobj.getString("District");
+                }
+                if (jobj.has("City")) {
+                    address.city = jobj.getString("City");
+                }
+                if (jobj.has("County")) {
+                    address.county = jobj.getString("County");
+                }
+                if (jobj.has("State")) {
+                    address.state = jobj.getString("State");
+                }
+                if (jobj.has("PostalCode")) {
+                    address.postalCode = jobj.getString("PostalCode");
+                }
+                if (jobj.has("Country")) {
+                    address.country = jobj.getString("Country");
+                }
             }
         }
 
-        return address;
+        return address.toString();
     }
 
 }

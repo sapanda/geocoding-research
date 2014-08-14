@@ -105,18 +105,35 @@ public class BingMaps implements Solution {
     }
 
     private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
+        Address address = new Address();
 
         JSONArray jarr = jobj.getJSONArray("resourceSets");
         if (jarr.length() > 0) {
             jarr = jarr.getJSONObject(0).getJSONArray("resources");
             if (jarr.length() > 0) {
-                address = jarr.getJSONObject(0)
-                        .getJSONObject("address")
-                        .getString("formattedAddress");
+                jobj = jarr.getJSONObject(0).getJSONObject("address");
+
+                if (jobj.has("addressLine")) {
+                    address.street = jobj.getString("addressLine");
+                }
+                if (jobj.has("locality")) {
+                    address.city = jobj.getString("locality");
+                }
+                if (jobj.has("adminDistrict2")) {
+                    address.county = jobj.getString("adminDistrict2");
+                }
+                if (jobj.has("adminDistrict")) {
+                    address.state = jobj.getString("adminDistrict");
+                }
+                if (jobj.has("postalCode")) {
+                    address.postalCode = jobj.getString("postalCode");
+                }
+                if (jobj.has("countryRegion")) {
+                    address.country = jobj.getString("countryRegion");
+                }
             }
         }
 
-        return address;
+        return address.toString();
     }
 }

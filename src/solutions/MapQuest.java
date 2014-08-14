@@ -106,7 +106,7 @@ public class MapQuest implements Solution {
     }
 
     private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
+        Address address = new Address();
 
         JSONArray jarr = jobj.getJSONArray("results");
         if (jarr.length() > 0) {
@@ -114,13 +114,30 @@ public class MapQuest implements Solution {
             if (jarr.length() > 0) {
                 jobj = jarr.getJSONObject(0);
 
-                address = jobj.getString("street") + ", " +
-                        jobj.getString("adminArea5") + ", " +
-                        jobj.getString("adminArea3") + " " +
-                        jobj.getString("postalCode");
+                if (jobj.has("street")) {
+                    address.street = jobj.getString("street");
+                }
+                if (jobj.has("adminArea6")) {
+                    address.district = jobj.getString("adminArea6");
+                }
+                if (jobj.has("adminArea5")) {
+                    address.city = jobj.getString("adminArea5");
+                }
+                if (jobj.has("adminArea4")) {
+                    address.county = jobj.getString("adminArea4");
+                }
+                if (jobj.has("adminArea3")) {
+                    address.state = jobj.getString("adminArea3");
+                }
+                if (jobj.has("postalCode")) {
+                    address.postalCode = jobj.getString("postalCode");
+                }
+                if (jobj.has("adminArea1")) {
+                    address.country = jobj.getString("adminArea1");
+                }
             }
         }
 
-        return address;
+        return address.toString();
     }
 }

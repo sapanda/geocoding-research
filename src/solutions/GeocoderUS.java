@@ -92,6 +92,9 @@ public class GeocoderUS implements Solution {
         if (jobj.has("number")) {
             address += jobj.getString("number") + " ";
         }
+        if (jobj.has("prefix")) {
+            address += jobj.getString("prefix") + " ";
+        }
         if (jobj.has("street")) {
             address += jobj.getString("street") + ", ";
         }

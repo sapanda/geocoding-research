@@ -107,20 +107,20 @@ public class OpenCageGeocoder implements Solution {
         if (jarr.length() > 0) {
             jobj = jarr.getJSONObject(0).getJSONObject("components");
 
-            if (jobj.has("house_number")) {
-                address += jobj.getString("house_number") + " ";
+            if (jobj.has("street_number")) {
+                address += jobj.getString("street_number") + " ";
             }
-            if (jobj.has("road")) {
-                address += jobj.getString("road") + ", ";
+            if (jobj.has("street_name")) {
+                address += jobj.getString("street_name") + ", ";
             }
-            if (jobj.has("city")) {
-                address += jobj.getString("city") + ", ";
+            if (jobj.has("locality")) {
+                address += jobj.getString("locality") + ", ";
             }
-            if (jobj.has("state")) {
-                address += jobj.getString("state") + " ";
+            if (jobj.has("region")) {
+                address += jobj.getString("region") + " ";
             }
-            if (jobj.has("postcode")) {
-                address += jobj.getString("postcode");
+            if (jobj.has("postal code")) {
+                address += jobj.getString("postal code");
             }
 
             if (address.length() == 0) {

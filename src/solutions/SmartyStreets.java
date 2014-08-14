@@ -92,31 +92,34 @@ public class SmartyStreets implements Solution {
     }
 
     private String parseAddress(JSONObject jobj) throws JSONException {
-        String address = "";
-        // for normalization
+        Address address = new Address();
+
         if (jobj.has("primary_number")) {
-            address += jobj.getString("primary_number") + " ";
+            address.houseNumber = jobj.getString("primary_number");
         }
         if (jobj.has("street_predirection")) {
-            address += jobj.getString("street_predirection") + " ";
+            address.street += jobj.getString("street_predirection") + " ";
         }
         if (jobj.has("street_name")) {
-            address += jobj.getString("street_name") + " ";
+            address.street += jobj.getString("street_name") + " ";
         }
         if (jobj.has("street_suffix")) {
-            address += jobj.getString("street_suffix") + ", ";
+            address.street += jobj.getString("street_suffix") + " ";
+        }
+        if (jobj.has("street_postdirection")) {
+            address.street += jobj.getString("street_postdirection");
         }
         if (jobj.has("city_name")) {
-            address += jobj.getString("city_name") + ", ";
+            address.city = jobj.getString("city_name");
         }
         if (jobj.has("state_abbreviation")) {
-            address += jobj.getString("state_abbreviation") + ", ";
+            address.state = jobj.getString("state_abbreviation");
         }
         if (jobj.has("zipcode")) {
-            address += jobj.getString("zipcode") + " ";
+            address.postalCode = jobj.getString("zipcode");
         }
 
-        return address;
+        return address.toString();
     }
 
 }

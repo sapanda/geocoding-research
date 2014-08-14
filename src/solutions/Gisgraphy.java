@@ -13,36 +13,8 @@ public class Gisgraphy implements Solution {
 
     @Override
     public String normalize(String address) {
-        String normAddress = "";
-
-        try {
-            // Make the query
-            URI uri = new URIBuilder("http://addressparser.appspot.com/webaddressparser")
-                .setParameter("address", address)
-                .setParameter("country", "US")
-                .setParameter("format", "json")
-                .build();
-
-            String json = util.HttpUtils.httpGetJson(uri);
-
-            // Parse the Data
-            JSONArray jarr = new JSONObject(json).getJSONArray("result");
-
-            // TODO: Deal with multiple return values
-            if (jarr.length() > 0) {
-                JSONObject jobj = jarr.getJSONObject(0);
-                normAddress = parseAddress(jobj);
-            }
-
-        } catch (URISyntaxException e1) {
-            e1.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        return normAddress;
+        // No address normalization
+        return null;
     }
 
     @Override
